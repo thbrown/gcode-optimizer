@@ -9,6 +9,14 @@
 	<script type="text/javascript" src="./src/algorithm.js"></script>
 	<script type="text/javascript" src="./src/utils.js"></script>
 	<script type="text/javascript" src="./src/data.js"></script>
+	<script>
+	  // Make setG0Points available globally
+	  window.setG0Points = function(points) {
+	    if (window.algorithm && window.algorithm.setG0Points) {
+	      window.algorithm.setG0Points(points);
+	    }
+	  };
+	</script>
     </head>
     <body>
 	<div class="container">

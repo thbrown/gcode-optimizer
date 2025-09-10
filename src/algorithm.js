@@ -233,12 +233,43 @@ function randomIndivial(n) {
   }
   return a.shuffle();
 }
+// Array to store G0 points with their last G1 points
+var g0Points = [];
+
+function setG0Points(points) {
+  g0Points = points;
+}
+
 function evaluate(indivial) {
-  var sum = dis[indivial[0]][indivial[indivial.length - 1]];
-  for(var i=1; i<indivial.length; i++) {
-    sum += dis[indivial[i]][indivial[i-1]];
+  if (g0Points.length === 0 || g0Points.length !== points.length) {
+    // Fallback to original TSP evaluation if g0Points not properly set
+    var sum = dis[indivial[0]][indivial[indivial.length - 1]];
+    for(var i=1; i<indivial.length; i++) {
+      sum += dis[indivial[i]][indivial[i-1]];
+    }
+    return sum;
+  } else {
+    var totalDistance = 0;
+    
+    // Get the first point's last G1 position (if any)
+    var firstPoint = g0Points[indivial[0]];
+    if (firstPoint.lastG1Point) {
+      totalDistance += distance(firstPoint.lastG1Point, points[indivial[0]]);
+    }
+    
+    // Distance between G0 points
+    for(var i=1; i<indivial.length; i++) {
+      totalDistance += dis[indivial[i-1]][indivial[i]];
+    }
+    
+    // Get the last point's last G1 position (if any)
+    var lastPoint = g0Points[indivial[indivial.length - 1]];
+    if (lastPoint.lastG1Point) {
+      totalDistance += distance(points[indivial[indivial.length - 1]], lastPoint.lastG1Point);
+    }
+    
+    return totalDistance;
   }
-  return sum;
 }
 function countDistances() {
   var length = points.length;
@@ -248,5 +279,11 @@ function countDistances() {
     for(var j=0; j<length; j++) {
       dis[i][j] = ~~distance(points[i], points[j]); 
     }
+  }
+  
+  // If we have a last G1 point, we need to include it in the distance calculations
+  if (lastG1Point) {
+    // The distance function will handle the G1 point separately
+    // since it's not in the points array
   }
 }
